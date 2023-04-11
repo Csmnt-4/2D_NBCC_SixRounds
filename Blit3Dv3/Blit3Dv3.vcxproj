@@ -183,6 +183,7 @@
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="DieRoller.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Navigation.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Rendering.cpp" />
   </ItemGroup>
@@ -190,6 +191,7 @@
     <ClInclude Include="Blit3DBaseFiles\GLEW\GL\glew.h" />
     <ClInclude Include="Blit3DBaseFiles\GLEW\GL\wglew.h" />
     <ClInclude Include="DieRoller.h" />
+    <ClInclude Include="Navigation.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Rendering.h" />
   </ItemGroup>

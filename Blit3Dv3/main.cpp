@@ -15,16 +15,25 @@
 
 #include "Blit3D.h"
 #include "Player.h"
+#include "Rendering.h"
 
 Blit3D* blit3D = NULL;
 
 //GLOBAL DATA
 Player player;
+Grid drid;
+double elapsedTime = 0;
+float timeSlice = 1.f /30.f ;
 
 void Init()
 {
 	player = Player();
 	player.Init(blit3D);
+	player.Update(blit3D);
+	drid.player = player;
+
+	drid.AddRandomGoblin(blit3D);
+
 	//player.staticSprite = blit3D->MakeSprite(0, 0, 64, 64, player.getSpriteFilePath());
 	//player.staticSprite = blit3D->MakeSprite(0, 0, 64, 64, "Media\\GreyChunk.png");
 	//printf("%i", player.actionPoints);
@@ -37,12 +46,26 @@ void DeInit(void)
 
 void Update(double seconds)
 {
-	player.Update(blit3D);
-}
+	if (seconds < 0.15) {
+		elapsedTime += seconds;
+	}
+	else {
+		elapsedTime += 0.15;
+	}
+
+	//update by a full timeslice when it's time
+	while (elapsedTime >= timeSlice)
+	{
+		elapsedTime -= timeSlice;
+		drid.Update(blit3D);
+		if (drid.goblins.empty())
+			drid.AddRandomGoblins(blit3D);
+	}
+ }
 
 void Draw(void)
 {
-	glClearColor(1.0f, 0.0f, 1.0f, 0.0f);	//clear colour: r,g,b,a
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);	//clear colour: r,g,b,a
 	// wipe the drawing surface clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -52,8 +75,8 @@ void Draw(void)
 	//the arguments to Blit(0 are the x, y pixel coords to draw the center of the sprite at,
 	//starting as 0,0 in the bottom-left corner.
 	//backgroundSprite->Blit(1920.f / 2, 1080.f / 2);
-
-	player.Draw(blit3D);
+	drid.Draw(blit3D);
+	//player.Draw(blit3D);
 	//rotate the heart:
 	//sprites have a public var called angle that determines the rotation in degrees.
 }
@@ -67,43 +90,43 @@ void DoInput(int key, int scancode, int action, int mods)
 	//////////////////////////////////////////////////
 
 	if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		player.WalkLeft();
+		drid.player.WalkLeft();
 
 	if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		player.WalkRight();
+		drid.player.WalkRight();
 
 	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		player.WalkUp();
+		drid.player.WalkUp();
 
 	if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		player.WalkDown();
+		drid.player.WalkDown();
 	
 	//////////////////////////////////////////////////
 	
 	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-		player.WalkLeft();
+		drid.player.WalkLeft();
 
 	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		player.WalkRight();
+		drid.player.WalkRight();
 
 	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-		player.WalkUp();
+		drid.player.WalkUp();
 
 	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		player.WalkDown();
+		drid.player.WalkDown();
 	
 	//////////////////////////////////////////////////
 	
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-		player.Shoot();
+		drid.player.Shoot();
 
 	if (key == GLFW_KEY_R && action == GLFW_PRESS)
-		player.Reload();
+		drid.player.Reload();
 	
 	//////////////////////////////////////////////////
 
 	if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)
-		player.Recover();
+		drid.player.Recover();
 }
 
 //called whenever the user resizes the window
