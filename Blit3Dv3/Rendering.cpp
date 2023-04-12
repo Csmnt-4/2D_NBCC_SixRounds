@@ -33,7 +33,6 @@ Direction FindOpenPath(Position currentPosition, Position targetPosition, std::v
 		}
 	}
 
-	printf("\n\n\Looking for a path...");
 	// Determine the direction of the closest open path
 	int minI = 1, minJ = 1;
 	float minDistance = std::numeric_limits<float>::infinity();
@@ -49,7 +48,7 @@ Direction FindOpenPath(Position currentPosition, Position targetPosition, std::v
 
 	// Convert the direction to a Direction enum value
 	if (minI == 0 && minJ == 0) {
-		if (distances[0][1] >= distances[1][0])
+		if (distances[0][1] >= distances[1][0] && distances[1][0] != std::numeric_limits<float>::infinity())
 			return Direction::LEFT;
 		return Direction::DOWN;
 	}
@@ -57,7 +56,7 @@ Direction FindOpenPath(Position currentPosition, Position targetPosition, std::v
 		return Direction::LEFT;
 	}
 	else if (minI == 0 && minJ == 2) {
-		if (distances[0][2] >= distances[1][2])
+		if (distances[0][2] >= distances[1][2] && distances[1][2] != std::numeric_limits<float>::infinity())
 			return Direction::LEFT;
 		return Direction::UP;
 	}
@@ -68,7 +67,7 @@ Direction FindOpenPath(Position currentPosition, Position targetPosition, std::v
 		return Direction::UP;
 	}
 	else if (minI == 2 && minJ == 0) {
-		if (distances[2][1] >= distances[1][0])
+		if (distances[2][1] >= distances[1][0] && distances[1][0] != std::numeric_limits<float>::infinity())
 			return Direction::RIGHT;
 		return Direction::DOWN;
 	}
@@ -76,48 +75,55 @@ Direction FindOpenPath(Position currentPosition, Position targetPosition, std::v
 		return Direction::RIGHT;
 	}
 	else if (minI == 2 && minJ == 2) {
-		if (distances[2][1] >= distances[1][2])
+		if (distances[2][1] >= distances[1][2] && distances[1][2] != std::numeric_limits<float>::infinity())
 			return Direction::RIGHT;
 		return Direction::UP;
 	}
 	else return Direction::STATIC;
 }
 
-bool Grid::Update(Blit3D* blit3D)
+bool Grid::Update(Blit3D* blit3D, float seconds)
 {
-	{
-		// TODO: If player is attacking, i.e. performAttack == true,
-		//
-		//  try ShootClosestEntityOnTheLineOfSight();
-		if (player.performAttack) {
-			ShootClosestEntityOnTheLineOfSight();
-			player.performAttack = false;
-		}
-
-		// TODO: If goblin is attacking,  i.e. performAttack == true,
-		// and player is next to goblin (doublechecking), player recieves damage.
-
-		if (!goblins.empty())
-			for (auto& goblin : goblins)
-			{
-				if (goblin.performAttack) {
-					if (goblin.position.isNextToTarget(player.position))
-						player.RecieveDamage(goblin.lookDirection);
-					goblin.performAttack = false;
-				}
-			}
+	
+		// If player is attacking, i.e. performAttack == true,
+		// try ShootClosestEntityOnTheLineOfSight();
+	if (player.performAttack) {
+		ShootClosestEntityOnTheLineOfSight();
+		player.isAttacking = true;
+		player.performAttack = false;
 	}
 
-	player.Update(blit3D);
+		// If goblin is attacking,  i.e. performAttack == true,
+		// and player is next to goblin (doublechecking), player recieves damage.
 	if (!goblins.empty())
 		for (auto& goblin : goblins)
 		{
-			goblin.Update(blit3D);
+			if (goblin.performAttack) {
+				for (auto& otherGoblin : goblins)
+				{
+					if (goblin.position.isTargetInFornt(otherGoblin.position, goblin.lookDirection))
+						otherGoblin.RecieveDamage(goblin.lookDirection);
+				}
+
+				if (goblin.position.isTargetInFornt(player.position, goblin.lookDirection))
+					player.RecieveDamage(goblin.lookDirection);
+				goblin.performAttack = false;
+			}
 		}
+	
+	if (player.healthPoints > 0 || player.isBusy())
+		player.Update(blit3D, seconds);
+
+	if (!goblins.empty())
+		for (auto& goblin : goblins)
+		{
+			goblin.Update(blit3D, seconds);
+		}
+
 	if (!goblins.empty())
 		for (int i = goblins.size() - 1; i >= 0; i--) {
-			if (/*!goblins.at(i).isBusy() && */goblins.at(i).healthPoints == 0) {
-				printf("\n\tdead - %i", i);
+			// isBusy seems to be not working properly without all animations present
+			if (/*!goblins.at(i).isBusy() &&*/ goblins.at(i).healthPoints == 0) {
 				goblins.erase(goblins.begin() + i);
 			}
 		}
@@ -125,25 +131,18 @@ bool Grid::Update(Blit3D* blit3D)
 	if (player.actionPoints == 0 &&
 		// If there is animation going on, no updates or new actions, please!
 		// Shouldn't takee too long, right?
-		!player.isWalking &&
-		!player.isAttacking &&
-		!player.isGettingHit &&
-		!player.isDying)
+		!player.isBusy())
 	{
 		bool recover = true;
 		if (!goblins.empty())
 			for (auto& goblin : goblins)
 			{
-				if (!goblin.isWalking &&
-					!goblin.isAttacking &&
-					!goblin.isDying &&
-					!goblin.isGettingHit)
+				if (!goblin.isBusy())
 				{
 					if (goblin.actionPoints > 0)
 					{
 						recover = false;
 						goblin.Act(player, goblins);
-						printf("\n\tap = %i", goblin.actionPoints);
 						break;
 					}
 					else {
@@ -175,8 +174,15 @@ bool Grid::Update(Blit3D* blit3D)
 bool Grid::Draw(Blit3D* blit3D)
 {
 	if (player.isBusy() || player.healthPoints > 0)
+	{
 		player.Draw(blit3D);
-
+		for (int i = 1; i <= player.healthPoints; i++) {
+			heartSprite->Blit(200.f + i * 40.f, 1080.f / 1.1f);
+		}
+		for (int i = 1; i <= player.revolverRounds; i++) {
+			bulletSprite->Blit(1500.f + i * 30, 1080.f / 1.1f);
+		}
+	}
 	if (!goblins.empty())
 		for (auto& goblin : goblins)
 			goblin.Draw(blit3D);
@@ -196,26 +202,20 @@ bool Grid::ShootClosestEntityOnTheLineOfSight() {
 			case Direction::UP:
 			case Direction::DOWN:
 			{
-				printf("\n\n\tattempt!");
-				std::cout << closestDistance;
 				if (goblin.position.gPosY - player.position.gPosY < closestDistance)
 				{
 					closestDistance = player.position.gPosY - goblin.position.gPosY;
 					shotGoblinPosition = goblin.position.getGridPosition();
-					//std::cout << "\n\t" << shotGoblinPosition.x << "-x shot y-" << shotGoblinPosition.y;
 				}
 				break;
 			}
 			case Direction::LEFT:
 			case Direction::RIGHT:
 			{
-				printf("\n\n\tattempt!");
-				std::cout << closestDistance;
 				if (goblin.position.gPosX - player.position.gPosX < closestDistance)
 				{
 					closestDistance = player.position.gPosX - goblin.position.gPosX;
 					shotGoblinPosition = goblin.position.getGridPosition();
-					//std::cout << "\n\t" << shotGoblinPosition.x << "-x shot y-" << shotGoblinPosition.y;
 				}
 				break;
 			}
@@ -225,8 +225,6 @@ bool Grid::ShootClosestEntityOnTheLineOfSight() {
 
 	for (auto& goblin : goblins)
 	{
-		//std::cout << "\n\t" << goblin.position.getGridPosition().x << "-x find y-" << goblin.position.getGridPosition().y;
-
 		if (goblin.position.getGridPosition() == shotGoblinPosition) {
 			goblin.RecieveDamage(player.lookDirection);
 			return true;
@@ -240,8 +238,8 @@ void Grid::AddRandomGoblin(Blit3D* blit3D)
 {
 	DiceRoller dice = DiceRoller();
 	Goblin newGoblin = Goblin();
-	newGoblin.Init(blit3D, dice.Roll1DN(10), dice.Roll1DN(10));
-	newGoblin.Update(blit3D);
+	newGoblin.Init(blit3D, dice.Roll1DN(-5)+ dice.Roll1DN(5), dice.Roll1DN(5) + dice.Roll1DN(-5));
+	newGoblin.Update(blit3D, 1);
 	goblins.push_back(newGoblin);
 }
 
@@ -249,9 +247,6 @@ void Grid::AddRandomGoblins(Blit3D* blit3D)
 {
 	DiceRoller dice = DiceRoller();
 	for (int i = 0; i < dice.Roll1DN(5); ++i) {
-		Goblin newGoblin = Goblin();
-		newGoblin.Init(blit3D, dice.Roll1DN(10), dice.Roll1DN(10));
-		newGoblin.Update(blit3D);
-		goblins.push_back(newGoblin);
+		AddRandomGoblin(blit3D);
 	}
 }

@@ -16,21 +16,40 @@
 #include "Blit3D.h"
 #include "Player.h"
 #include "Rendering.h"
+#include "DieRoller.h"
 
 Blit3D* blit3D = NULL;
 
+enum GameState { START = 0, PLAYING, OVER };
+
 //GLOBAL DATA
+GameState gameState = GameState::START;
 Player player;
 Grid drid;
+DiceRoller dice;
+
+std::vector<std::tuple<glm::vec2, Sprite*>> hugeBananas;
+std::vector<Sprite*> pressStart;
+
+int currentFrame = 0;
 double elapsedTime = 0;
-float timeSlice = 1.f /30.f ;
+float timeSlice = 1.f / 120.f;
 
 void Init()
 {
 	player = Player();
 	player.Init(blit3D);
-	player.Update(blit3D);
+	player.Update(blit3D, 1);
 	drid.player = player;
+
+	drid.heartSprite = blit3D->MakeSprite(0, 0, 32, 32, "Media\\heart_banana.png");
+	drid.bulletSprite = blit3D->MakeSprite(0, 0, 32, 32, "Media\\bullet_bullet.png");
+
+	for (int i = 0; i < 12; i++)
+		pressStart.push_back(blit3D->MakeSprite(i * 1920, 0, 1920, 1080, "Media\\press_start.png"));
+
+	//drid.heartSprite = blit3D->MakeSprite(0, 0, 160, 160, "Media\\heart_banana.png");
+	//drid.bulletSprite = blit3D->MakeSprite(0, 0, 160, 160, "Media\\bullet_bullet.png");
 
 	drid.AddRandomGoblin(blit3D);
 
@@ -56,16 +75,43 @@ void Update(double seconds)
 	//update by a full timeslice when it's time
 	while (elapsedTime >= timeSlice)
 	{
+		if ((int)gameState == 0 || (int)gameState == 2) {
+			if (hugeBananas.size() <= 1024) {
+				for (int i = 0; i <= dice.Roll1DN(3); ++i) {
+					Sprite* banana = blit3D->MakeSprite(0, 0, 160, 160, "Media\\huge_banana.png");
+					banana->angle = dice.Roll1DN(360);
+					hugeBananas.push_back(std::tuple<glm::vec2, Sprite*>{glm::vec2(dice.Roll1DN(1920), dice.Roll1DN(1080)), banana});
+				}
+			}
+			if (currentFrame == 11)
+				currentFrame = 0;
+			else currentFrame++;
+		}
+
+		if ((int)gameState == 1) {
+			timeSlice = 1.f / 120.f;
+			if (!hugeBananas.empty()) {
+				if (!hugeBananas.empty())
+					hugeBananas.pop_back();
+				if (!hugeBananas.empty())
+					hugeBananas.pop_back();
+				if (!hugeBananas.empty())
+					hugeBananas.erase(hugeBananas.begin() + dice.Roll1DN(hugeBananas.size()) - 1);
+			}
+			drid.Update(blit3D, elapsedTime);
+			if (drid.goblins.empty())
+				drid.AddRandomGoblins(blit3D);
+			if (drid.player.healthPoints == 0) {
+				gameState = GameState::OVER;
+			}
+		}
 		elapsedTime -= timeSlice;
-		drid.Update(blit3D);
-		if (drid.goblins.empty())
-			drid.AddRandomGoblins(blit3D);
 	}
- }
+}
 
 void Draw(void)
 {
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);	//clear colour: r,g,b,a
+	glClearColor(0.197f / 0.256f, 0.207f / 0.256f, 0.196f / 0.256f, 1.f);	//clear colour: r,g,b,a
 	// wipe the drawing surface clear
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -75,7 +121,22 @@ void Draw(void)
 	//the arguments to Blit(0 are the x, y pixel coords to draw the center of the sprite at,
 	//starting as 0,0 in the bottom-left corner.
 	//backgroundSprite->Blit(1920.f / 2, 1080.f / 2);
-	drid.Draw(blit3D);
+
+	if ((int)gameState >= 1) {
+		drid.Draw(blit3D);
+	}
+
+	if (!hugeBananas.empty()) {
+		for (auto& tuple : hugeBananas) {
+			std::get<1>(tuple)->Blit(std::get<0>(tuple).x, std::get<0>(tuple).y);
+		}
+		if (hugeBananas.size() >= 512 && (int)gameState < 1) {
+			pressStart[currentFrame]->Blit(1920.f / 2, 1080.f / 2);
+			timeSlice = 0.07f;
+		}
+	}
+	//////////////////////////////////////////////////
+
 	//player.Draw(blit3D);
 	//rotate the heart:
 	//sprites have a public var called angle that determines the rotation in degrees.
@@ -89,44 +150,51 @@ void DoInput(int key, int scancode, int action, int mods)
 
 	//////////////////////////////////////////////////
 
-	if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		drid.player.WalkLeft();
-
-	if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		drid.player.WalkRight();
-
-	if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		drid.player.WalkUp();
-
-	if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		drid.player.WalkDown();
-	
-	//////////////////////////////////////////////////
-	
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
-		drid.player.WalkLeft();
-
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
-		drid.player.WalkRight();
-
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS)
-		drid.player.WalkUp();
-
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
-		drid.player.WalkDown();
-	
-	//////////////////////////////////////////////////
-	
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-		drid.player.Shoot();
-
-	if (key == GLFW_KEY_R && action == GLFW_PRESS)
-		drid.player.Reload();
-	
+	if ((int)gameState == 0 /*|| (int)gameState == 2 TODO*/)
+		if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+			gameState = GameState::PLAYING;
 	//////////////////////////////////////////////////
 
-	if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)
-		drid.player.Recover();
+	if ((int)gameState == 1 && hugeBananas.empty()) {
+		if (key == GLFW_KEY_A && action == GLFW_PRESS)
+			drid.player.WalkLeft();
+
+		if (key == GLFW_KEY_D && action == GLFW_PRESS)
+			drid.player.WalkRight();
+
+		if (key == GLFW_KEY_W && action == GLFW_PRESS)
+			drid.player.WalkUp();
+
+		if (key == GLFW_KEY_S && action == GLFW_PRESS)
+			drid.player.WalkDown();
+
+		//////////////////////////////////////////////////
+
+		if (key == GLFW_KEY_LEFT && action == GLFW_PRESS)
+			drid.player.WalkLeft();
+
+		if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS)
+			drid.player.WalkRight();
+
+		if (key == GLFW_KEY_UP && action == GLFW_PRESS)
+			drid.player.WalkUp();
+
+		if (key == GLFW_KEY_DOWN && action == GLFW_PRESS)
+			drid.player.WalkDown();
+
+		//////////////////////////////////////////////////
+
+		if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+			drid.player.Shoot();
+
+		if (key == GLFW_KEY_R && action == GLFW_PRESS)
+			drid.player.Reload();
+
+		//////////////////////////////////////////////////
+
+		if (key == GLFW_KEY_SLASH && action == GLFW_PRESS)
+			drid.player.Recover();
+	}
 }
 
 //called whenever the user resizes the window

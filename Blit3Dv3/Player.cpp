@@ -10,26 +10,55 @@ Entity::Entity()
 
 bool Entity::Init(Blit3D* blit3D)
 {
-	// TODO: Push the sprites via loop, more elegantly.
+	// TODO: Push the sprites via loop, more elegantly!!!.
 	// And make that so a-l-l sprites are being pushed simultaneously!
+
+	std::vector<Sprite*> idleAnimationsLeft;
+	std::vector<Sprite*> idleAnimationsRight;
+	std::vector<Sprite*> idleAnimationsUp;
+	std::vector<Sprite*> idleAnimationsDown;
 
 	std::vector<Sprite*> walkAnimationsLeft;
 	std::vector<Sprite*> walkAnimationsRight;
 	std::vector<Sprite*> walkAnimationsUp;
 	std::vector<Sprite*> walkAnimationsDown;
 
+	std::vector<Sprite*> attackAnimationsLeft;
+	std::vector<Sprite*> attackAnimationsRight;
+	std::vector<Sprite*> attackAnimationsUp;
+	std::vector<Sprite*> attackAnimationsDown;
+
 	for (int i = 0; i < maxFrameNumber; ++i) {
-		idleAnimation.push_back(blit3D->MakeSprite(i * 64, 0, 64, 64, spriteFilePath));
-		walkAnimationsLeft.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkLeftSpriteFilePath));
-		walkAnimationsRight.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkRightSpriteFilePath));
-		walkAnimationsUp.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkUpSpriteFilePath));
-		walkAnimationsDown.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkDownSpriteFilePath));
+		idleAnimationsLeft  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleLeftSpriteFilePath));
+		idleAnimationsRight .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleRightSpriteFilePath));
+		idleAnimationsUp    .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleUpSpriteFilePath));
+		idleAnimationsDown  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleDownSpriteFilePath));
+
+		walkAnimationsLeft  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkLeftSpriteFilePath));
+		walkAnimationsRight .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkRightSpriteFilePath));
+		walkAnimationsUp    .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkUpSpriteFilePath));
+		walkAnimationsDown  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkDownSpriteFilePath));
+
+		attackAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackLeftSpriteFilePath));
+		attackAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackRightSpriteFilePath));
+		attackAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackUpSpriteFilePath));
+		attackAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackDownSpriteFilePath));
 	}
 
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, walkAnimationsLeft));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , idleAnimationsLeft));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, idleAnimationsRight));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , idleAnimationsUp));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , idleAnimationsDown));
+
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , walkAnimationsLeft));
 	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, walkAnimationsRight));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, walkAnimationsUp));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, walkAnimationsDown));
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , walkAnimationsUp));
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , walkAnimationsDown));
+
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , attackAnimationsLeft));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, attackAnimationsRight));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , attackAnimationsUp));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , attackAnimationsDown));
 
 	position = Position(1, 1);
 	return true;
@@ -37,51 +66,89 @@ bool Entity::Init(Blit3D* blit3D)
 
 bool Entity::Init(Blit3D* blit3D, int x, int y)
 {
+	std::vector<Sprite*> idleAnimationsLeft;
+	std::vector<Sprite*> idleAnimationsRight;
+	std::vector<Sprite*> idleAnimationsUp;
+	std::vector<Sprite*> idleAnimationsDown;
+
 	std::vector<Sprite*> walkAnimationsLeft;
 	std::vector<Sprite*> walkAnimationsRight;
 	std::vector<Sprite*> walkAnimationsUp;
 	std::vector<Sprite*> walkAnimationsDown;
 
+	std::vector<Sprite*> attackAnimationsLeft;
+	std::vector<Sprite*> attackAnimationsRight;
+	std::vector<Sprite*> attackAnimationsUp;
+	std::vector<Sprite*> attackAnimationsDown;
+
 	for (int i = 0; i < maxFrameNumber; ++i) {
-		idleAnimation.push_back(blit3D->MakeSprite(i * 64, 0, 64, 64, spriteFilePath));
-		walkAnimationsLeft.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkLeftSpriteFilePath));
-		walkAnimationsRight.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkRightSpriteFilePath));
-		walkAnimationsUp.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkUpSpriteFilePath));
-		walkAnimationsDown.push_back(blit3D->MakeSprite(i * 192, 0, 192, 192, walkDownSpriteFilePath));
+		idleAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleLeftSpriteFilePath));
+		idleAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleRightSpriteFilePath));
+		idleAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleUpSpriteFilePath));
+		idleAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleDownSpriteFilePath));
+
+		walkAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkLeftSpriteFilePath));
+		walkAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkRightSpriteFilePath));
+		walkAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkUpSpriteFilePath));
+		walkAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkDownSpriteFilePath));
+
+		attackAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackLeftSpriteFilePath));
+		attackAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackRightSpriteFilePath));
+		attackAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackUpSpriteFilePath));
+		attackAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackDownSpriteFilePath));
 	}
 
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, walkAnimationsLeft));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , idleAnimationsLeft));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, idleAnimationsRight));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , idleAnimationsUp));
+	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , idleAnimationsDown));
+	
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , walkAnimationsLeft));
 	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, walkAnimationsRight));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, walkAnimationsUp));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, walkAnimationsDown));
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , walkAnimationsUp));
+	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , walkAnimationsDown));
+	
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , attackAnimationsLeft));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, attackAnimationsRight));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , attackAnimationsUp));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , attackAnimationsDown));
 
 	position = Position(x, y);
 	return true;
 }
 
-bool Entity::Update(Blit3D* blit3D)
+bool Entity::Update(Blit3D* blit3D, float seconds)
 {
-	currentFrameNumber++;
-	if (currentFrameNumber == maxFrameNumber) {
-		currentFrameNumber = 0;
-		isWalking = false;
-		isGettingHit = false;
-		isAttacking = false;
-	}
-	if (isWalking || isGettingHit || isAttacking) {
-		//if (isGettingHit)
-		//	currentSprite = hitAnimations.at((int) hitFromDirection).at(currentFrameNumber);
-		//else if (isAttacking)
-		//	currentSprite = attackAnimations.at(lookDirection)->at(currentFrameNumber);
-		//else if (isWalking)
-		if (isWalking)
-			currentSprite = walkAnimations.at((int) lookDirection).at(currentFrameNumber);
-		return true;
-	}
-	else {
-		currentSprite = idleAnimation[currentFrameNumber];
-		position.Update(blit3D);
-		//	return true;
+	internalTimer += seconds;
+
+	if (internalTimer >= 0.11f) {
+		internalTimer = 0.f;
+		currentFrameNumber++;
+		if (currentFrameNumber == maxFrameNumber) {
+			currentFrameNumber = 0;
+			isWalking = false;
+			isGettingHit = false;
+			isAttacking = false;
+		}
+		if (isWalking || isGettingHit || isAttacking) {
+			//if (isGettingHit)
+			//	currentSprite = hitAnimations.at((int) hitFromDirection).at(currentFrameNumber);
+			if (isAttacking) {
+				currentSprite = attackAnimations.at((int) lookDirection).at(currentFrameNumber);
+				return true;
+			}
+			//else if (isWalking)
+			else if (isWalking) {
+				currentSprite = walkAnimations.at((int) lookDirection).at(currentFrameNumber);
+				internalTimer = 0.02f;
+				return true;
+			}
+		}
+		else {
+			currentSprite = idleAnimations.at((int)lookDirection).at(currentFrameNumber);
+			position.Update(blit3D);
+			//	return true;
+		}
 	}
 	return false;
 }
@@ -146,6 +213,50 @@ bool Entity::WalkRight()
 	return false;
 }
 
+bool Entity::TurnUp()
+{
+	if (!hasNoAP() && !isBusy())
+	{
+		actionPoints--;
+		lookDirection = Direction::UP;
+		return true;
+	}
+	return false;
+}
+
+bool Entity::TurnDown()
+{
+	if (!hasNoAP() && !isBusy())
+	{
+		actionPoints--;
+		lookDirection = Direction::DOWN;
+		return true;
+	}
+	return false;
+}
+
+bool Entity::TurnLeft()
+{
+	if (!hasNoAP() && !isBusy())
+	{
+		actionPoints--;
+		lookDirection = Direction::LEFT;
+		return true;
+	}
+	return false;
+}
+
+bool Entity::TurnRight()
+{
+	if (!hasNoAP() && !isBusy())
+	{
+		actionPoints--;
+		lookDirection = Direction::RIGHT;
+		return true;
+	}
+	return false;
+}
+
 bool Entity::hasNoAP()
 {
 	return actionPoints == 0;
@@ -159,26 +270,25 @@ bool Entity::isBusy()
 void Entity::printInformation()
 {
 	printf("\n");
-	printf("\n\thp = %i"           , healthPoints);
-	printf("\n\tap = %i"          , actionPoints);
+	printf("\n\thp = %i", healthPoints);
+	printf("\n\tap = %i", actionPoints);
 	printf("\n");
-	printf("\n\tisWalking = %i"   , isWalking);
-	printf("\n\tisAttacking = %i" , isAttacking);
-	printf("\n\tisDying = %i"     , isDying);
+	printf("\n\tisWalking = %i", isWalking);
+	printf("\n\tisAttacking = %i", isAttacking);
+	printf("\n\tisDying = %i", isDying);
 	printf("\n\tisGettingHit = %i", isGettingHit);
 	printf("\n");
-	printf("\n\tx = %i, y = %i"	  , position.gPosX, position.gPosY);
-
+	printf("\n\tx = %i, y = %i", position.gPosX, position.gPosY);
 }
 
 bool Entity::Attack()
 {
 	if (!hasNoAP() && !isBusy())
 	{
-		actionPoints--;
 		currentFrameNumber = 0;
 		performAttack = true;
 		isAttacking = true;
+		actionPoints--;
 		return true;
 	}
 }
@@ -221,22 +331,27 @@ Player::Player()
 	maxActionPoints = 2;
 	actionPoints = 2;
 
-	spriteFilePath = "Media\\BananaMan_idle.png";
+	spriteFilePath            = "Media\\bananaman_idle.png";
 
-	walkLeftSpriteFilePath = "Media\\BananaMan_walkLeft.png";
-	walkRightSpriteFilePath = "Media\\BananaMan_walkRight.png";
-	walkUpSpriteFilePath = "Media\\BananaMan_walkUp.png";
-	walkDownSpriteFilePath = "Media\\BananaMan_walkDown.png";
+	idleLeftSpriteFilePath    = "Media\\bananaman_idle_left.png";
+	idleRightSpriteFilePath   = "Media\\bananaman_idle_right.png";
+	idleUpSpriteFilePath      = "Media\\bananaman_idle_up.png";
+	idleDownSpriteFilePath    = "Media\\bananaman_idle_down.png";
 
-	shootLeftSpriteFilePath = "Media\\BananaMan_shootLeft.png";
-	shootRightSpriteFilePath = "Media\\BananaMan_shootRight.png";
-	shootUpSpriteFilePath = "Media\\BananaMan_shootUp.png";
-	shootDownSpriteFilePath = "Media\\BananaMan_shootDown.png";
+	walkLeftSpriteFilePath    = "Media\\bananaman_step_left.png";
+	walkRightSpriteFilePath   = "Media\\bananaman_step_right.png";
+	walkUpSpriteFilePath      = "Media\\bananaman_step_up.png";
+	walkDownSpriteFilePath    = "Media\\bananaman_step_down.png";
 
-	hitLeftSpriteFilePath = "Media\\BananaMan_hitLeft.png";
-	hitRightSpriteFilePath = "Media\\BananaMan_hitRight.png";
-	hitUpSpriteFilePath = "Media\\BananaMan_hitUp.png";
-	hitDownSpriteFilePath = "Media\\BananaMan_hitDown.png";
+	attackLeftSpriteFilePath  = "Media\\bananaman_shoot_left.png";
+	attackRightSpriteFilePath = "Media\\bananaman_shoot_right.png";
+	attackUpSpriteFilePath    = "Media\\bananaman_shoot_up.png";
+	attackDownSpriteFilePath  = "Media\\bananaman_shoot_down.png";
+
+	hitLeftSpriteFilePath     = "Media\\bananaman_hit_left.png";
+	hitRightSpriteFilePath    = "Media\\bananaman_hit_right.png";
+	hitUpSpriteFilePath       = "Media\\bananaman_hit_up.png";
+	hitDownSpriteFilePath     = "Media\\bananaman_hit_down.png";
 }
 
 bool Player::Shoot()
@@ -244,7 +359,6 @@ bool Player::Shoot()
 	if (!hasNoAP() && !hasNoAmmo())
 	{
 		revolverRounds--;
-		actionPoints--;
 		Attack();
 		return true;
 	}
@@ -253,8 +367,12 @@ bool Player::Shoot()
 
 bool Player::Reload()
 {
-	revolverRounds = maxRevolverRounds;
-	return true;
+	if (!hasNoAP() && revolverRounds < maxRevolverRounds) {
+		actionPoints--;
+		revolverRounds = maxRevolverRounds;
+		return true;
+	}
+	return false;
 }
 
 bool Player::hasNoAmmo()
@@ -269,22 +387,28 @@ Goblin::Goblin()
 	maxActionPoints = 1;
 	actionPoints = 1;
 
-	spriteFilePath = "Media\\BananaMan_idle.png";
+	// TODO: Finish the sprites already.....
+	spriteFilePath            = "Media\\bananaman_idle.png";
 
-	walkLeftSpriteFilePath = "Media\\BananaMan_walkLeft.png";
-	walkRightSpriteFilePath = "Media\\BananaMan_walkRight.png";
-	walkUpSpriteFilePath = "Media\\BananaMan_walkUp.png";
-	walkDownSpriteFilePath = "Media\\BananaMan_walkDown.png";
+	idleLeftSpriteFilePath    = "Media\\bananaman_idle_left.png";
+	idleRightSpriteFilePath   = "Media\\bananaman_idle_right.png";
+	idleUpSpriteFilePath      = "Media\\bananaman_idle_up.png";
+	idleDownSpriteFilePath    = "Media\\bananaman_idle_down.png";
 
-	shootLeftSpriteFilePath = "Media\\BananaMan_shootLeft.png";
-	shootRightSpriteFilePath = "Media\\BananaMan_shootRight.png";
-	shootUpSpriteFilePath = "Media\\BananaMan_shootUp.png";
-	shootDownSpriteFilePath = "Media\\BananaMan_shootDown.png";
+	walkLeftSpriteFilePath    = "Media\\bananaman_step_left.png";
+	walkRightSpriteFilePath   = "Media\\bananaman_step_right.png";
+	walkUpSpriteFilePath      = "Media\\bananaman_step_up.png";
+	walkDownSpriteFilePath    = "Media\\bananaman_step_down.png";
 
-	hitLeftSpriteFilePath = "Media\\BananaMan_hitLeft.png";
-	hitRightSpriteFilePath = "Media\\BananaMan_hitRight.png";
-	hitUpSpriteFilePath = "Media\\BananaMan_hitUp.png";
-	hitDownSpriteFilePath = "Media\\BananaMan_hitDown.png";
+	attackLeftSpriteFilePath  = "Media\\bananaman_shoot_left.png";
+	attackRightSpriteFilePath = "Media\\bananaman_shoot_right.png";
+	attackUpSpriteFilePath    = "Media\\bananaman_shoot_up.png";
+	attackDownSpriteFilePath  = "Media\\bananaman_shoot_down.png";
+
+	hitLeftSpriteFilePath     = "Media\\bananaman_hit_left.png";
+	hitRightSpriteFilePath    = "Media\\bananaman_hit_right.png";
+	hitUpSpriteFilePath       = "Media\\bananaman_hit_up.png";
+	hitDownSpriteFilePath     = "Media\\bananaman_hit_down.png";
 }
 
 bool Goblin::Act(Player player, std::vector<Goblin> goblins) {
@@ -295,79 +419,63 @@ bool Goblin::Act(Player player, std::vector<Goblin> goblins) {
 		case Direction::UP: {
 			// TODO: Check for other obstacles?
 			// No, because OpenPath is open, by definition.
-
-			WalkUp();
+			// WRONG, CHECK IT.
+			bool isPathOpen = true;
+			for each (auto goblin in goblins)
+			{
+				isPathOpen = goblin.position.getGridPosition() != position.getGridPosition() + glm::vec2(0, 1);
+				if (!isPathOpen)
+					break;
+			}
+			if (isPathOpen)
+				WalkUp();
+			else
+				Attack();
 			break;
-		}
-
-		case Direction::UP_LEFT: {
-			switch (dice.Roll1DN(2))
-			{
-			case 1:
-				WalkUp();
-				break;
-			case 2:
-				WalkLeft();
-				break;
-			default:
-				break;
-			}
-		}
-
-		case Direction::UP_RIGHT: {
-			switch (dice.Roll1DN(2))
-			{
-			case 1:
-				WalkUp();
-				break;
-			case 2:
-				WalkRight();
-				break;
-			default:
-				break;
-			}
 		}
 
 		case Direction::DOWN: {
-			WalkDown();
+			bool isPathOpen = true;
+			for each (auto goblin in goblins)
+			{
+				isPathOpen = goblin.position.getGridPosition() != position.getGridPosition() + glm::vec2(0, -1);
+				if (!isPathOpen)
+					break;
+			}
+			if (isPathOpen)
+				WalkDown();
+			else
+				Attack();
 			break;
 		}
 
-		case Direction::DOWN_LEFT: {
-			switch (dice.Roll1DN(2))
-			{
-			case 1:
-				WalkDown();
-				break;
-			case 2:
-				WalkLeft();
-				break;
-			default:
-				break;
-			}
-		}
-
-		case Direction::DOWN_RIGHT: {
-			switch (dice.Roll1DN(2))
-			{
-			case 1:
-				WalkDown();
-				break;
-			case 2:
-				WalkRight();
-				break;
-			default:
-				break;
-			}
-		}
-
 		case Direction::LEFT: {
-			WalkLeft();
+			bool isPathOpen = true;
+			for each (auto goblin in goblins)
+			{
+				isPathOpen = goblin.position.getGridPosition() != position.getGridPosition() + glm::vec2(-1, 0);
+				if (!isPathOpen)
+					break;
+			}
+			if (isPathOpen)
+				WalkLeft();
+			else
+				Attack();
 			break;
 		}
 
 		case Direction::RIGHT: {
-			WalkRight();
+			bool isPathOpen = true;
+			for each (auto goblin in goblins)
+			{
+				isPathOpen = goblin.position.getGridPosition() != position.getGridPosition() + glm::vec2(1, 0);
+				if (!isPathOpen)
+					break;
+			}
+			if (isPathOpen)
+				WalkRight();
+			else 
+				Attack();
 			break;
 		}
 
@@ -380,8 +488,30 @@ bool Goblin::Act(Player player, std::vector<Goblin> goblins) {
 	}
 	else
 	{
+		if(position.isTargetInFornt(player.position, lookDirection))
+			Attack();
+		else
+			switch (lookDirection)
+			{
+			case UP:
+				TurnDown();
+				break;
+			case RIGHT:
+				TurnLeft();
+				break;
+			case DOWN:
+				TurnUp();
+				break;
+			case LEFT:
+				TurnRight();
+				break;
+			case STATIC:
+			default:
+				Attack();
+				break;
+			}
+
 		// Attack!
-		Attack();
 	}
 
 	return true;

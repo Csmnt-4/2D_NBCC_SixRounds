@@ -24,7 +24,7 @@ public:
 	glm::vec2 Position::getGridPosition();
 	
 	bool isOnLineOfSight(Position otherPosition, Direction lookDirection);
-	bool isNextToTarget(Position targetPosition);
+	bool isNextToTarget(Position targetPosition), isTargetInFornt(Position targetPosition, Direction lookDirection);
 
 	Position(), Position(int gPosX, int gPosY);
 	bool Update(Blit3D* blit3D);

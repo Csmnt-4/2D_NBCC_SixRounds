@@ -34,6 +34,7 @@ Sprite::Sprite(GLfloat startX, GLfloat startY, GLfloat width, GLfloat height,
 	texManager->FetchDimensions(TextureFileName, imagewidth, imageheight);
 
 	GLfloat u1 = startX / imagewidth;
+
 	GLfloat u2 = (startX + width) / imagewidth;
 
 	GLfloat v1 = 1.f - (startY / imageheight);

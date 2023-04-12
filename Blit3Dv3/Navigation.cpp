@@ -15,7 +15,7 @@ Position::Position(int x, int y)
 	gPosY = y;
 	step = 1;
 
-	int spriteSize = 64;
+	int spriteSize = 128;
 
 	float x_prime = x + y;
 	float y_prime = 0.5 * y + 0.5 * y;
@@ -26,7 +26,7 @@ Position::Position(int x, int y)
 
 std::tuple<float, float> Position::TransformToScreenPosition(int x, int y)
 {
-	int spriteSize = 64;
+	int spriteSize = 128;
 
 	// Going from grid coordinate to screen coordinate
 	std::tuple<float, float> position =
@@ -43,7 +43,7 @@ std::tuple<float, float> Position::TransformToScreenPosition(int x, int y)
 
 std::tuple<float, float> Position::TransformToGridPosition(int x, int y)
 {
-	int spriteSize = 64;
+	int spriteSize = 128;
 
 	//Going from screen coordinate to grid coordinate
 	std::tuple<float, float> position = {
@@ -90,8 +90,6 @@ glm::vec2 Position::getGridPosition() {
 };
 
 bool Position::isOnLineOfSight(Position otherPosition, Direction lookDirection) {
-	std::cout << "\n\t" << lookDirection;
-
 	switch (lookDirection) {
 	case Direction::UP:
 		if (gPosX == otherPosition.gPosX)
@@ -119,6 +117,44 @@ bool Position::isNextToTarget(Position targetPosition) {
 		targetPosition.gPosY >= gPosY - 1 &&
 		targetPosition.gPosY <= gPosY + 1) {
 		return true;
+	}
+	return false;
+}
+
+bool Position::isTargetInFornt(Position targetPosition, Direction lookDirection) {
+	switch (lookDirection) {
+		case Direction::UP: {
+			if (targetPosition.gPosX >= gPosX - 1 &&
+				targetPosition.gPosX <= gPosX + 1 &&
+				targetPosition.gPosY > gPosY) {
+				return true;
+			}
+			return false;
+		}
+		case Direction::DOWN: {
+			if (targetPosition.gPosX >= gPosX - 1 &&
+				targetPosition.gPosX <= gPosX + 1 &&
+				targetPosition.gPosY < gPosY) {
+				return true;
+			}
+			return false;
+		}
+		case Direction::LEFT: {
+			if (targetPosition.gPosY >= gPosY - 1 &&
+				targetPosition.gPosY <= gPosY + 1 &&
+				targetPosition.gPosX < gPosX) {
+				return true;
+			}
+			return false;
+		}
+		case Direction::RIGHT: {
+			if (targetPosition.gPosY >= gPosY - 1 &&
+				targetPosition.gPosY <= gPosY + 1 &&
+				targetPosition.gPosX > gPosX) {
+				return true;
+			}
+			return false;
+		}
 	}
 	return false;
 }

@@ -13,11 +13,15 @@ public:
 	Player player;
 	std::vector<Goblin> goblins;
 
+	Sprite* heartSprite = nullptr;
+	Sprite* bulletSprite = nullptr;
+
+
 	bool ShootClosestEntityOnTheLineOfSight();
 	void AddRandomGoblin(Blit3D* blit3D), AddRandomGoblins(Blit3D* blit3D);
 
 	Grid();
-	bool Update(Blit3D* blit3D);
+	bool Update(Blit3D* blit3D, float seconds);
 	bool Draw(Blit3D*);
 	
 	// TODO: Goblin's Attack() function, Draw() grid function to draw tiles for height by width;
