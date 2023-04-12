@@ -195,6 +195,26 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Rendering.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Media\banana.png" />
+    <Image Include="Media\bananaman_idle_down.png" />
+    <Image Include="Media\bananaman_idle_left.png" />
+    <Image Include="Media\bananaman_idle_right.png" />
+    <Image Include="Media\bananaman_idle_up.png" />
+    <Image Include="Media\bananaman_shoot_down.png" />
+    <Image Include="Media\bananaman_shoot_left.png" />
+    <Image Include="Media\bananaman_shoot_right.png" />
+    <Image Include="Media\bananaman_shoot_up.png" />
+    <Image Include="Media\bananaman_step_down.png" />
+    <Image Include="Media\bananaman_step_left.png" />
+    <Image Include="Media\bananaman_step_right.png" />
+    <Image Include="Media\bananaman_step_up.png" />
+    <Image Include="Media\bullet.png" />
+    <Image Include="Media\bullet_bullet.png" />
+    <Image Include="Media\GreyChunk.png" />
+    <Image Include="Media\heart_banana.png" />
+    <Image Include="Media\huge_banana.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
