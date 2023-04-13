@@ -16,8 +16,9 @@ public:
 	// In process of drawing the animations
 	std::map<int, std::vector<Sprite*>> idleAnimations;
 	std::map<int, std::vector<Sprite*>> walkAnimations;
-	std::map<int, std::vector<Sprite*>> hitAnimations;
 	std::map<int, std::vector<Sprite*>> attackAnimations;
+	std::map<int, std::vector<Sprite*>> hitAnimations;
+	std::map<int, std::vector<Sprite*>> deathAnimations;
 
 	Direction lookDirection;
 	Direction hitFromDirection; // For future. 
@@ -41,6 +42,10 @@ public:
 		        hitRightSpriteFilePath, 
 		        hitUpSpriteFilePath, 
 		        hitDownSpriteFilePath;
+	std::string deathLeftSpriteFilePath, 
+		        deathRightSpriteFilePath, 
+		        deathUpSpriteFilePath, 
+		        deathDownSpriteFilePath;
 	Sprite* currentSprite;
 	std::vector<Sprite*> idleAnimation;
 

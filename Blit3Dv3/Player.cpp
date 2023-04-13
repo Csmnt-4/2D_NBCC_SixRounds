@@ -10,9 +10,6 @@ Entity::Entity()
 
 bool Entity::Init(Blit3D* blit3D)
 {
-	// TODO: Push the sprites via loop, more elegantly!!!.
-	// And make that so a-l-l sprites are being pushed simultaneously!
-
 	std::vector<Sprite*> idleAnimationsLeft;
 	std::vector<Sprite*> idleAnimationsRight;
 	std::vector<Sprite*> idleAnimationsUp;
@@ -28,37 +25,52 @@ bool Entity::Init(Blit3D* blit3D)
 	std::vector<Sprite*> attackAnimationsUp;
 	std::vector<Sprite*> attackAnimationsDown;
 
-	for (int i = 0; i < maxFrameNumber; ++i) {
-		idleAnimationsLeft  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleLeftSpriteFilePath));
-		idleAnimationsRight .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleRightSpriteFilePath));
-		idleAnimationsUp    .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleUpSpriteFilePath));
-		idleAnimationsDown  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleDownSpriteFilePath));
+	std::vector<Sprite*> deathAnimationsLeft;
+	std::vector<Sprite*> deathAnimationsRight;
+	std::vector<Sprite*> deathAnimationsUp;
+	std::vector<Sprite*> deathAnimationsDown;
 
-		walkAnimationsLeft  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkLeftSpriteFilePath));
-		walkAnimationsRight .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkRightSpriteFilePath));
-		walkAnimationsUp    .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkUpSpriteFilePath));
-		walkAnimationsDown  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkDownSpriteFilePath));
+	for (int i = 0; i < maxFrameNumber; ++i) {
+		idleAnimationsLeft   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleLeftSpriteFilePath));
+		idleAnimationsRight  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleRightSpriteFilePath));
+		idleAnimationsUp     .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleUpSpriteFilePath));
+		idleAnimationsDown   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleDownSpriteFilePath));
+
+		walkAnimationsLeft   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkLeftSpriteFilePath));
+		walkAnimationsRight  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkRightSpriteFilePath));
+		walkAnimationsUp     .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkUpSpriteFilePath));
+		walkAnimationsDown   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, walkDownSpriteFilePath));
 
 		attackAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackLeftSpriteFilePath));
 		attackAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackRightSpriteFilePath));
 		attackAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackUpSpriteFilePath));
 		attackAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackDownSpriteFilePath));
+
+		deathAnimationsLeft  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathLeftSpriteFilePath));
+		deathAnimationsRight .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathRightSpriteFilePath));
+		deathAnimationsUp    .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathUpSpriteFilePath));
+		deathAnimationsDown  .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathDownSpriteFilePath));
 	}
 
-	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , idleAnimationsLeft));
-	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, idleAnimationsRight));
-	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , idleAnimationsUp));
-	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , idleAnimationsDown));
+	idleAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, idleAnimationsLeft));
+	idleAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, idleAnimationsRight));
+	idleAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, idleAnimationsUp));
+	idleAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, idleAnimationsDown));
 
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , walkAnimationsLeft));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, walkAnimationsRight));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , walkAnimationsUp));
-	walkAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , walkAnimationsDown));
+	walkAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, walkAnimationsLeft));
+	walkAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, walkAnimationsRight));
+	walkAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, walkAnimationsUp));
+	walkAnimations  .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, walkAnimationsDown));
 
-	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , attackAnimationsLeft));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, attackAnimationsLeft));
 	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, attackAnimationsRight));
-	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , attackAnimationsUp));
-	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , attackAnimationsDown));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, attackAnimationsUp));
+	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, attackAnimationsDown));
+
+	deathAnimations .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT, deathAnimationsLeft));
+	deathAnimations .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, deathAnimationsRight));
+	deathAnimations .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP, deathAnimationsUp));
+	deathAnimations .insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN, deathAnimationsDown));
 
 	position = Position(1, 1);
 	return true;
@@ -81,6 +93,11 @@ bool Entity::Init(Blit3D* blit3D, int x, int y)
 	std::vector<Sprite*> attackAnimationsUp;
 	std::vector<Sprite*> attackAnimationsDown;
 
+	std::vector<Sprite*> deathAnimationsLeft;
+	std::vector<Sprite*> deathAnimationsRight;
+	std::vector<Sprite*> deathAnimationsUp;
+	std::vector<Sprite*> deathAnimationsDown;
+
 	for (int i = 0; i < maxFrameNumber; ++i) {
 		idleAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleLeftSpriteFilePath));
 		idleAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, idleRightSpriteFilePath));
@@ -96,6 +113,11 @@ bool Entity::Init(Blit3D* blit3D, int x, int y)
 		attackAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackRightSpriteFilePath));
 		attackAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackUpSpriteFilePath));
 		attackAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, attackDownSpriteFilePath));
+
+		deathAnimationsLeft .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathLeftSpriteFilePath));
+		deathAnimationsRight.push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathRightSpriteFilePath));
+		deathAnimationsUp   .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathUpSpriteFilePath));
+		deathAnimationsDown .push_back(blit3D->MakeSprite(i * 384, 0, 384, 384, deathDownSpriteFilePath));
 	}
 
 	idleAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , idleAnimationsLeft));
@@ -112,6 +134,11 @@ bool Entity::Init(Blit3D* blit3D, int x, int y)
 	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, attackAnimationsRight));
 	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , attackAnimationsUp));
 	attackAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , attackAnimationsDown));
+	
+	deathAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::LEFT , deathAnimationsLeft));
+	deathAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::RIGHT, deathAnimationsRight));
+	deathAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::UP   , deathAnimationsUp));
+	deathAnimations.insert(std::pair<int, std::vector<Sprite*>>((int)Direction::DOWN , deathAnimationsDown));
 
 	position = Position(x, y);
 	return true;
@@ -129,8 +156,9 @@ bool Entity::Update(Blit3D* blit3D, float seconds)
 			isWalking = false;
 			isGettingHit = false;
 			isAttacking = false;
+			isDying = false;
 		}
-		if (isWalking || isGettingHit || isAttacking) {
+		if (isBusy()) {
 			//if (isGettingHit)
 			//	currentSprite = hitAnimations.at((int) hitFromDirection).at(currentFrameNumber);
 			if (isAttacking) {
@@ -141,6 +169,11 @@ bool Entity::Update(Blit3D* blit3D, float seconds)
 			else if (isWalking) {
 				currentSprite = walkAnimations.at((int) lookDirection).at(currentFrameNumber);
 				internalTimer = 0.02f;
+				return true;
+			}
+			else if (isDying) {
+				currentSprite = deathAnimations.at((int)lookDirection).at(currentFrameNumber);
+				//internalTimer = 0.f;
 				return true;
 			}
 		}
@@ -302,6 +335,7 @@ bool Entity::Recover()
 bool Entity::RecieveDamage(Direction hitDirection)
 {
 	healthPoints--;
+	currentFrameNumber = 0;
 	hitFromDirection = hitDirection;
 	if (healthPoints == 0)
 	{
@@ -327,7 +361,7 @@ Player::Player()
 	revolverRounds = 6;
 	maxRevolverRounds = 6;
 	maxHealthPoints = 6;
-	healthPoints = 6;
+	healthPoints = 3;
 	maxActionPoints = 2;
 	actionPoints = 2;
 
@@ -352,6 +386,11 @@ Player::Player()
 	hitRightSpriteFilePath    = "Media\\bananaman_hit_right.png";
 	hitUpSpriteFilePath       = "Media\\bananaman_hit_up.png";
 	hitDownSpriteFilePath     = "Media\\bananaman_hit_down.png";
+
+	deathLeftSpriteFilePath   = "Media\\bananaman_idle_left.png";
+	deathRightSpriteFilePath  = "Media\\bananaman_idle_right.png";
+	deathUpSpriteFilePath     = "Media\\bananaman_idle_up.png";
+	deathDownSpriteFilePath   = "Media\\bananaman_idle_down.png";
 }
 
 bool Player::Shoot()
@@ -390,25 +429,30 @@ Goblin::Goblin()
 	// TODO: Finish the sprites already.....
 	spriteFilePath            = "Media\\bananaman_idle.png";
 
-	idleLeftSpriteFilePath    = "Media\\bananaman_idle_left.png";
-	idleRightSpriteFilePath   = "Media\\bananaman_idle_right.png";
-	idleUpSpriteFilePath      = "Media\\bananaman_idle_up.png";
-	idleDownSpriteFilePath    = "Media\\bananaman_idle_down.png";
+	idleLeftSpriteFilePath    = "Media\\cactigoblin_idle_left.png";
+	idleRightSpriteFilePath   = "Media\\cactigoblin_idle_right.png";
+	idleUpSpriteFilePath      = "Media\\cactigoblin_idle_up.png";
+	idleDownSpriteFilePath    = "Media\\cactigoblin_idle_down.png";
 
-	walkLeftSpriteFilePath    = "Media\\bananaman_step_left.png";
-	walkRightSpriteFilePath   = "Media\\bananaman_step_right.png";
-	walkUpSpriteFilePath      = "Media\\bananaman_step_up.png";
-	walkDownSpriteFilePath    = "Media\\bananaman_step_down.png";
+	walkLeftSpriteFilePath    = "Media\\cactigoblin_step_left.png";
+	walkRightSpriteFilePath   = "Media\\cactigoblin_step_right.png";
+	walkUpSpriteFilePath      = "Media\\cactigoblin_step_up.png";
+	walkDownSpriteFilePath    = "Media\\cactigoblin_step_down.png";
 
-	attackLeftSpriteFilePath  = "Media\\bananaman_shoot_left.png";
-	attackRightSpriteFilePath = "Media\\bananaman_shoot_right.png";
-	attackUpSpriteFilePath    = "Media\\bananaman_shoot_up.png";
-	attackDownSpriteFilePath  = "Media\\bananaman_shoot_down.png";
+	attackLeftSpriteFilePath  = "Media\\cactigoblin_idle_left.png";
+	attackRightSpriteFilePath = "Media\\cactigoblin_idle_right.png";
+	attackUpSpriteFilePath    = "Media\\cactigoblin_idle_up.png";
+	attackDownSpriteFilePath  = "Media\\cactigoblin_idle_down.png";
 
 	hitLeftSpriteFilePath     = "Media\\bananaman_hit_left.png";
 	hitRightSpriteFilePath    = "Media\\bananaman_hit_right.png";
 	hitUpSpriteFilePath       = "Media\\bananaman_hit_up.png";
 	hitDownSpriteFilePath     = "Media\\bananaman_hit_down.png";
+
+	deathLeftSpriteFilePath   = "Media\\cactigoblin_death_left.png";
+	deathRightSpriteFilePath  = "Media\\cactigoblin_death_right.png";
+	deathUpSpriteFilePath     = "Media\\cactigoblin_death_up.png";
+	deathDownSpriteFilePath   = "Media\\cactigoblin_death_down.png";
 }
 
 bool Goblin::Act(Player player, std::vector<Goblin> goblins) {

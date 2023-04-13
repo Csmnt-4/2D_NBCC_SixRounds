@@ -8,17 +8,27 @@
 class Grid {
 public:
 	int height = 10, width = 10;
-	int maxGoblinsAbmount;
+	int maxGoblinsAmount = 5;
+	int score = 0;
+	float internalTimer = 0;
 
 	Player player;
 	std::vector<Goblin> goblins;
 
-	Sprite* heartSprite = nullptr;
-	Sprite* bulletSprite = nullptr;
-
+	Sprite* heartSprite = nullptr, * bulletSprite = nullptr;
+	std::string bufferString = "";
+	std::string	scoreString = "";
 
 	bool ShootClosestEntityOnTheLineOfSight();
 	void AddRandomGoblin(Blit3D* blit3D), AddRandomGoblins(Blit3D* blit3D);
+	bool isBusy();
+	
+	bool WalkUp(), WalkDown(), WalkLeft(), WalkRight();
+
+	void appendToFile(std::string fileName, int score);
+	std::string loadTextFile(const std::string fileName);
+	void outputString(std::map<char, Sprite*> alphabet, int startX, int startY);
+
 
 	Grid();
 	bool Update(Blit3D* blit3D, float seconds);
